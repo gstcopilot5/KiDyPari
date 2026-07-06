@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>KiddyPari — Welcome</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* cooler blue-teal-green sky so pink/purple Pari pops */
+    --sky-top:#57a3e6; --sky-mid:#79cfd0; --sky-low:#cdeec7; --sky-glow:#fff0c8;
+    --gold:#ffcf5c; --pink:#ff87b6; --purple:#a982f0; --mint:#7fe0c0;
+    --grass:#84d488; --grass-deep:#3f9a54; --ink:#33406b;
+    --font-display:'Fredoka','Baloo 2',system-ui,sans-serif;
+    --font-body:'Nunito',system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;overflow:hidden;}
+  body{font-family:var(--font-body);
+    background:
+      radial-gradient(120% 80% at 76% 12%, var(--sky-glow) 0%, transparent 46%),
+      linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 50%, var(--sky-low) 100%);
+    position:relative;user-select:none;touch-action:manipulation;
+    display:flex;flex-direction:column;align-items:center;}
+
+  /* ---------- SCENE ---------- */
+  .scene{position:fixed;inset:0;overflow:hidden;z-index:0;}
+  .sun{position:absolute;top:-100px;right:-80px;width:360px;height:360px;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,246,214,.95) 0%, rgba(255,216,150,.4) 42%, transparent 70%);
+    animation:sunBreathe 13s ease-in-out infinite;}
+  @keyframes sunBreathe{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.05);opacity:1}}
+  .rays{position:absolute;top:-120px;right:-120px;width:520px;height:520px;opacity:.13;
+    animation:spinSlow 90s linear infinite;transform-origin:center;}
+  @keyframes spinSlow{to{transform:rotate(360deg)}}
+
+  /* soft light behind Pari to separate her from the sky */
+  .backlight{position:absolute;left:50%;top:43%;width:min(92vw,440px);height:min(92vw,440px);
+    transform:translate(-50%,-50%);border-radius:50%;z-index:0;
+    background:radial-gradient(circle, rgba(255,255,255,.6) 0%, rgba(255,255,255,.18) 40%, transparent 68%);}
+  .rainbow{position:absolute;bottom:17vh;left:-8%;width:min(82vw,500px);height:auto;opacity:.32;z-index:0;pointer-events:none;}
+
+  .stars,.petals{position:absolute;inset:0;pointer-events:none;}
+  .star{position:absolute;background:#fff;border-radius:50%;box-shadow:0 0 6px rgba(255,255,255,.9);
+    animation:twinkle 5s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
+  .petal{position:absolute;top:-24px;width:15px;height:12px;border-radius:14px 3px 14px 3px;
+    background:linear-gradient(135deg,#ffd6ea,#ff9ec6);opacity:.9;animation:petalFall linear infinite;}
+  @keyframes petalFall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:.9}90%{opacity:.9}
+    100%{transform:translate(var(--drift,40px),106vh) rotate(420deg);opacity:0}}
+
+  .hills{position:absolute;bottom:19vh;left:0;width:100%;opacity:.6;}
+  .cloud{position:absolute;filter:drop-shadow(0 12px 16px rgba(70,90,140,.14));}
+  .cloud.c1{top:15%;left:-20%;width:250px;animation:cloudMove 95s linear infinite;}
+  .cloud.c2{top:31%;left:-32%;width:160px;opacity:.92;animation:cloudMove 130s linear infinite;animation-delay:-55s;}
+  .cloud.c3{top:10%;left:-24%;width:130px;opacity:.8;animation:cloudMove 160s linear infinite;animation-delay:-100s;}
+  @keyframes cloudMove{from{transform:translateX(0)}to{transform:translateX(135vw)}}
+
+  .island{position:absolute;top:40%;left:6%;width:120px;
+    filter:drop-shadow(0 16px 20px rgba(60,80,130,.22));animation:bob 11s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-14px) rotate(1deg)}}
+
+  .ground{position:absolute;bottom:0;left:0;width:100%;height:25vh;z-index:1;}
+  .vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 42%, transparent 55%, rgba(40,60,110,.18) 100%);}
+
+  /* ---------- STAGE ---------- */
+  .stage{position:relative;z-index:5;width:100%;height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+    padding:calc(env(safe-area-inset-top) + 14px) 18px calc(env(safe-area-inset-bottom) + 18px);}
+  .topbar{width:100%;display:flex;justify-content:flex-end;}
+  .gear{width:52px;height:52px;display:grid;place-items:center;border-radius:18px;
+    background:rgba(255,255,255,.45);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.65);
+    box-shadow:0 10px 26px rgba(50,60,110,.2);color:#3f6ab0;cursor:pointer;transition:transform .15s ease;}
+  .gear:active{transform:scale(.92) rotate(30deg);}
+  .gear svg{width:24px;height:24px;}
+
+  /* ---------- PARI ---------- */
+  .pari-wrap{margin:auto 0;display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;
+    animation:pariIn 1.1s cubic-bezier(.2,.9,.25,1) both;}
+  @keyframes pariIn{from{opacity:0;transform:translateY(24px) scale(.92)}to{opacity:1;transform:none}}
+  .pari-float{animation:pariFloat 7s ease-in-out infinite;filter:drop-shadow(0 20px 28px rgba(40,50,110,.3));}
+  @keyframes pariFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-12px) rotate(.7deg)}}
+  .pari-svg{width:min(78vw,320px);height:auto;display:block;overflow:visible;}
+  .pari-wrap:active .pari-float{transform:scale(.97);}
+
+  .wingL,.wingR{transform-box:fill-box;}
+  .wingL{transform-origin:88% 50%;animation:wingL 3.8s ease-in-out infinite;}
+  .wingR{transform-origin:12% 50%;animation:wingR 3.8s ease-in-out infinite;}
+  @keyframes wingL{0%,100%{transform:rotate(0)}50%{transform:rotate(-8deg)}}
+  @keyframes wingR{0%,100%{transform:rotate(0)}50%{transform:rotate(8deg)}}
+  .wing-glow{animation:wingGlow 4s ease-in-out infinite;}
+  @keyframes wingGlow{0%,100%{opacity:.5}50%{opacity:.85}}
+
+  .eyes{transform-box:fill-box;transform-origin:center;animation:blink 5.6s ease-in-out infinite;}
+  @keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+  .aura{transform-box:fill-box;transform-origin:center;animation:auraPulse 6s ease-in-out infinite;}
+  @keyframes auraPulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:.85;transform:scale(1.06)}}
+  .orbit{transform-box:fill-box;transform-origin:center;animation:spinSlow 34s linear infinite;}
+  .twinkle-s{animation:twinkle 3.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+  .gemglow{animation:wingGlow 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+
+  .bubble{position:absolute;top:-8px;left:50%;transform:translate(-50%,-100%) scale(.6);
+    max-width:270px;background:#fff;color:var(--ink);font-family:var(--font-display);font-weight:600;
+    font-size:16px;line-height:1.35;padding:14px 18px;border-radius:22px;text-align:center;
+    box-shadow:0 14px 30px rgba(50,60,120,.24);opacity:0;pointer-events:none;
+    border:2px solid rgba(120,170,240,.5);z-index:6;}
+  .bubble::after{content:"";position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);
+    border:9px solid transparent;border-top-color:#fff;}
+  .bubble.show{animation:bubblePop .4s cubic-bezier(.2,1.3,.4,1) forwards;}
+  @keyframes bubblePop{to{opacity:1;transform:translate(-50%,-100%) scale(1)}}
+
+  /* ---------- CAMERA (pink+green+blue+black+purple+yellow) ---------- */
+  .cam-wrap{width:100%;display:flex;justify-content:center;padding-bottom:8px;
+    animation:camIn 1.1s .3s cubic-bezier(.2,.9,.25,1) both;}
+  @keyframes camIn{from{opacity:0;transform:translateY(30px) scale(.9)}to{opacity:1;transform:none}}
+  .cam{position:relative;border:none;background:none;cursor:pointer;
+    animation:camWobble 6s ease-in-out infinite;filter:drop-shadow(0 20px 26px rgba(60,50,120,.35));}
+  @keyframes camWobble{0%,100%{transform:translateY(0) rotate(-1.2deg)}50%{transform:translateY(-7px) rotate(1.2deg)}}
+  .cam-body{width:min(72vw,260px);aspect-ratio:4/3;border-radius:16px;position:relative;
+    background:linear-gradient(180deg,#6ccbf6 0%,#4fb0ea 100%);
+    border:3px solid #17121f;border-bottom:9px solid #17121f;
+    display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+    padding:14px 16px 12px;transition:transform .12s ease;}
+  .cam-body::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:14px;
+    background:radial-gradient(120% 60% at 30% 10%, rgba(255,255,255,.4), transparent 55%);}
+  .cam:active .cam-body{transform:scale(.96) translateY(3px);}
+  .grip{position:absolute;top:-16px;left:20%;width:42%;height:22px;border-radius:13px 13px 0 0;
+    background:#2fbcaa;border:3px solid #17121f;border-bottom:none;}
+  .shutter{position:absolute;top:-14px;right:15%;width:42px;height:18px;border-radius:11px 11px 0 0;
+    background:#ff9e3d;border:3px solid #17121f;border-bottom:none;}
+  .flash-bulb{position:absolute;top:-11px;left:56%;width:24px;height:15px;border-radius:8px 8px 0 0;
+    background:#ff6fa8;border:3px solid #17121f;border-bottom:none;}
+  .cam-dot{position:absolute;top:20%;left:12%;width:16px;height:16px;border-radius:50%;
+    background:#ffd447;border:2.5px solid #17121f;z-index:3;}
+  .cam-cheek{position:absolute;bottom:19%;width:26px;height:15px;border-radius:50%;
+    background:#ff8ab8;opacity:.7;filter:blur(.5px);z-index:2;}
+  .cam-cheek.l{left:9%;} .cam-cheek.r{right:9%;}
+  .cam-eyes{width:100%;display:flex;justify-content:space-around;padding:2px 22px 0;z-index:2;}
+  .cam-eye{width:36px;height:36px;background:#fff;border-radius:50%;display:grid;place-items:center;
+    border:2.5px solid #17121f;animation:blink 5s ease-in-out infinite;}
+  .cam-pupil{width:17px;height:17px;background:#17121f;border-radius:50%;position:relative;}
+  .cam-pupil::before{content:"";position:absolute;top:3px;left:3px;width:8px;height:8px;background:#fff;border-radius:50%;}
+  .lens{width:46%;aspect-ratio:1;border-radius:50%;background:#ff5fa8;margin-top:-2px;z-index:2;
+    box-shadow:0 8px 16px rgba(0,0,0,.2);position:relative;overflow:hidden;border:4px solid #17121f;
+    display:grid;place-items:center;}
+  .lens-inner{width:76%;height:76%;border-radius:50%;background:#ffcf5c;
+    display:grid;place-items:center;position:relative;overflow:hidden;}
+  .lens-inner::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.85) 50%,transparent 60%);
+    transform:translateX(-120%);animation:glint 6s ease-in-out infinite;}
+  @keyframes glint{0%,60%{transform:translateX(-120%)}82%,100%{transform:translateX(120%)}}
+  .aperture{width:58%;height:58%;aspect-ratio:1;background:#12224a;border-radius:50%;position:relative;
+    box-shadow:0 0 0 6px #2fc0a8;}
+  .aperture::before{content:"";position:absolute;top:16%;left:18%;width:26%;height:26%;
+    background:#fff;border-radius:50%;}
+  .cam-mouth{margin-top:6px;z-index:2;}
+
+  /* ---------- OVERLAYS ---------- */
+  .flash{position:fixed;inset:0;background:#fff;opacity:0;z-index:40;pointer-events:none;}
+  .flash.go{animation:flash .5s ease-out;}
+  @keyframes flash{0%{opacity:0}18%{opacity:.9}100%{opacity:0}}
+  .sparkle{position:fixed;z-index:35;pointer-events:none;animation:sparkleFly .9s ease-out forwards;will-change:transform,opacity;}
+  @keyframes sparkleFly{0%{transform:translate(-50%,-50%) scale(.3) rotate(0);opacity:1}
+    100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.1) rotate(160deg);opacity:0}}
+
+  .modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;
+    background:rgba(40,50,90,.42);backdrop-filter:blur(6px);padding:24px;}
+  .modal.open{display:grid;animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .card{width:100%;max-width:340px;background:#fff;border-radius:28px;padding:26px 24px;text-align:center;
+    box-shadow:0 30px 60px rgba(40,50,90,.35);animation:cardPop .3s cubic-bezier(.2,1.3,.4,1);}
+  .card.shake{animation:shake .4s;}
+  @keyframes cardPop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
+  .card h2{font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--ink);margin-bottom:4px;}
+  .card p{color:#6b5b8a;font-weight:700;margin-bottom:16px;font-size:15px;}
+  .quiz{font-family:var(--font-display);font-weight:700;font-size:26px;color:var(--purple);margin-bottom:14px;}
+  .card input{width:100%;font-family:var(--font-display);font-weight:600;font-size:22px;text-align:center;
+    padding:12px;border-radius:16px;border:2px solid #d9e6ff;outline:none;color:var(--ink);margin-bottom:16px;}
+  .card input:focus{border-color:var(--purple);}
+  .btn-row{display:flex;gap:10px;}
+  .btn{flex:1;font-family:var(--font-display);font-weight:600;font-size:16px;padding:13px;border-radius:16px;border:none;cursor:pointer;transition:transform .12s ease;}
+  .btn:active{transform:scale(.95);}
+  .btn.primary{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;box-shadow:0 8px 18px rgba(150,90,220,.32);}
+  .btn.ghost{background:#eef2fb;color:#5b6bb0;}
+  .settings-note{display:none;margin-top:14px;font-weight:800;color:var(--grass-deep);font-size:14px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;}
+    .bubble{opacity:1;transform:translate(-50%,-100%) scale(1);}
+    .petal{display:none;}
+  }
+</style>
+</head>
+<body>
+
+  <svg style="position:absolute;width:0;height:0" aria-hidden="true"><defs>
+    <linearGradient id="cloudGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dcecf5"/></linearGradient>
+    <linearGradient id="grassGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fe08a"/><stop offset="1" stop-color="#5cbf6e"/></linearGradient>
+  </defs></svg>
+
+  <div class="scene" aria-hidden="true">
+    <svg class="rays" viewBox="0 0 100 100"><g fill="#fff">
+      <path d="M50 0 L54 40 L46 40 Z"/><path d="M100 50 L60 54 L60 46 Z"/><path d="M50 100 L46 60 L54 60 Z"/><path d="M0 50 L40 46 L40 54 Z"/>
+      <path d="M85 15 L58 42 L52 36 Z"/><path d="M15 85 L42 58 L48 64 Z"/><path d="M85 85 L58 58 L64 52 Z"/><path d="M15 15 L42 42 L36 48 Z"/>
+    </g></svg>
+    <div class="sun"></div>
+    <div class="backlight"></div>
+    <svg class="rainbow" viewBox="0 0 200 110" aria-hidden="true"><g fill="none" stroke-width="7" stroke-linecap="round">
+      <path d="M14 108 A86 86 0 0 1 186 108" stroke="#ff8fb0"/>
+      <path d="M24 108 A76 76 0 0 1 176 108" stroke="#ffcf5c"/>
+      <path d="M34 108 A66 66 0 0 1 166 108" stroke="#8fe08a"/>
+      <path d="M44 108 A56 56 0 0 1 156 108" stroke="#7ac6ff"/>
+      <path d="M54 108 A46 46 0 0 1 146 108" stroke="#bb93ff"/>
+    </g></svg>
+    <div class="stars" id="stars"></div>
+
+    <svg class="hills" viewBox="0 0 500 120" preserveAspectRatio="none">
+      <path d="M0,120 Q120,40 250,80 T500,60 L500,120 Z" fill="#4fb8a8"/>
+      <path d="M0,120 Q140,70 300,100 T500,88 L500,120 Z" fill="#3f9a8e"/>
+    </svg>
+
+    <svg class="cloud c1" viewBox="0 0 200 92"><g fill="url(#cloudGrad)"><ellipse cx="60" cy="55" rx="46" ry="30"/><ellipse cx="110" cy="46" rx="54" ry="34"/><ellipse cx="152" cy="58" rx="38" ry="26"/><rect x="40" y="58" width="132" height="28" rx="14"/></g><path d="M42 80 Q106 96 172 80" stroke="#d3e6f2" stroke-width="8" fill="none" stroke-linecap="round" opacity=".7"/></svg>
+    <svg class="cloud c2" viewBox="0 0 200 92"><g fill="url(#cloudGrad)"><ellipse cx="70" cy="52" rx="44" ry="28"/><ellipse cx="122" cy="46" rx="48" ry="30"/><rect x="46" y="54" width="112" height="26" rx="13"/></g></svg>
+    <svg class="cloud c3" viewBox="0 0 200 92"><g fill="url(#cloudGrad)"><ellipse cx="90" cy="50" rx="50" ry="30"/><ellipse cx="132" cy="56" rx="36" ry="24"/><rect x="55" y="56" width="102" height="24" rx="12"/></g></svg>
+
+    <svg class="island" viewBox="0 0 130 120">
+      <path d="M14 44 Q65 14 116 44 L104 66 Q65 84 26 66 Z" fill="url(#grassGrad)"/>
+      <path d="M26 64 Q65 82 104 64 L92 90 Q65 104 38 90 Z" fill="#7a5a3a"/>
+      <path d="M46 86 L60 116 L74 88 Q60 100 46 86" fill="#6b4a2f"/>
+      <ellipse cx="65" cy="38" rx="50" ry="15" fill="#a3ef9d"/>
+      <circle cx="46" cy="32" r="4" fill="#ff8fb0"/><circle cx="84" cy="34" r="4" fill="#ffcf5c"/>
+      <path d="M100 34 l3 -14 l3 14" stroke="#ffcf5c" stroke-width="3" fill="none"/>
+    </svg>
+
+    <div class="petals" id="petals"></div>
+
+    <svg class="ground" viewBox="0 0 500 160" preserveAspectRatio="none">
+      <path d="M0,58 Q125,20 250,48 T500,42 L500,160 L0,160 Z" fill="#84d488"/>
+      <path d="M0,84 Q140,54 280,80 T500,74 L500,160 L0,160 Z" fill="#54ba66"/>
+      <g fill="#fff" opacity=".95">
+        <circle cx="40" cy="118" r="5"/><circle cx="34" cy="112" r="4"/><circle cx="46" cy="112" r="4"/><circle cx="40" cy="124" r="4"/><circle cx="40" cy="118" r="3" fill="#ffcf5c"/>
+        <circle cx="460" cy="126" r="5"/><circle cx="454" cy="120" r="4"/><circle cx="466" cy="120" r="4"/><circle cx="460" cy="132" r="4"/><circle cx="460" cy="126" r="3" fill="#ff8fb0"/>
+      </g>
+      <g stroke="#2f7b45" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M90 150 q-6 -20 4 -32"/><path d="M400 150 q8 -22 -4 -34"/><path d="M250 152 q-4 -18 6 -30"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="vignette" aria-hidden="true"></div>
+
+  <div class="stage">
+    <div class="topbar">
+      <button class="gear" onclick="openParentGate()" aria-label="Grown-up settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+    </div>
+
+    <!-- PARI: anime fairy with jewellery + designer gown -->
+    <div class="pari-wrap" onclick="triggerPariSpeech()" role="button" aria-label="Pari">
+      <div class="bubble" id="bubble"></div>
+      <div class="pari-float">
+        <svg class="pari-svg" viewBox="0 0 260 320">
+          <defs>
+            <linearGradient id="hairGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffa8d8"/><stop offset="1" stop-color="#b184ee"/></linearGradient>
+            <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7d6"/><stop offset="1" stop-color="#ffd2b8"/></linearGradient>
+            <linearGradient id="dressGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9ec6"/><stop offset="1" stop-color="#c39bf0"/></linearGradient>
+            <linearGradient id="irisGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2fb0"/><stop offset=".55" stop-color="#7a5fe0"/><stop offset="1" stop-color="#bda4ff"/></linearGradient>
+            <linearGradient id="wingGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c6f0ff"/><stop offset=".5" stop-color="#ffc9ef"/><stop offset="1" stop-color="#e6d5ff"/></linearGradient>
+            <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe89a"/><stop offset="1" stop-color="#ffb01f"/></linearGradient>
+            <radialGradient id="auraGrad" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffffff" stop-opacity=".85"/><stop offset="42%" stop-color="#ffe6a0" stop-opacity=".45"/><stop offset="100%" stop-color="#ffd6ec" stop-opacity="0"/></radialGradient>
+          </defs>
+
+          <circle class="aura" cx="130" cy="168" r="122" fill="url(#auraGrad)"/>
+
+          <g class="orbit">
+            <path class="twinkle-s" d="M130 46 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3 z" fill="#fff2c9"/>
+            <path class="twinkle-s" style="animation-delay:-1.2s" d="M52 180 l2.4 5.6 l5.6 2.4 l-5.6 2.4 l-2.4 5.6 l-2.4 -5.6 l-5.6 -2.4 l5.6 -2.4 z" fill="#ffd45c"/>
+            <path class="twinkle-s" style="animation-delay:-2s" d="M208 176 l2.4 5.6 l5.6 2.4 l-5.6 2.4 l-2.4 5.6 l-2.4 -5.6 l-5.6 -2.4 l5.6 -2.4 z" fill="#ff9ee0"/>
+          </g>
+
+          <!-- WINGS: big beautiful flying wings -->
+          <g class="wingL">
+            <path class="wing-glow" d="M124,176 C92,148 50,138 22,104 C4,82 10,54 34,64 C70,80 104,124 124,156 Z" fill="url(#wingGrad)" fill-opacity=".72" stroke="#e9d5ff" stroke-width="1.6"/>
+            <path class="wing-glow" d="M122,184 C96,192 58,212 50,250 C48,270 72,266 88,244 C106,222 120,198 122,188 Z" fill="url(#wingGrad)" fill-opacity=".62" stroke="#e9d5ff" stroke-width="1.6"/>
+            <path d="M114,164 C86,146 54,140 32,116 C20,102 26,86 40,96 C66,114 98,144 114,158 Z" fill="#ffffff" opacity=".26"/>
+            <path d="M50,88 C74,110 102,140 120,158" stroke="#ffffff" stroke-width="1.4" fill="none" opacity=".5"/>
+            <path d="M70,220 C90,210 108,196 118,184" stroke="#ffffff" stroke-width="1.2" fill="none" opacity=".45"/>
+            <circle cx="26" cy="86" r="3.2" fill="#fff" opacity=".85"/><circle cx="58" cy="248" r="2.8" fill="#fff" opacity=".75"/><circle cx="16" cy="112" r="2.4" fill="#ffd6ec" opacity=".8"/>
+          </g>
+          <g class="wingR">
+            <path class="wing-glow" d="M136,176 C168,148 210,138 238,104 C256,82 250,54 226,64 C190,80 156,124 136,156 Z" fill="url(#wingGrad)" fill-opacity=".72" stroke="#e9d5ff" stroke-width="1.6"/>
+            <path class="wing-glow" d="M138,184 C164,192 202,212 210,250 C212,270 188,266 172,244 C154,222 140,198 138,188 Z" fill="url(#wingGrad)" fill-opacity=".62" stroke="#e9d5ff" stroke-width="1.6"/>
+            <path d="M146,164 C174,146 206,140 228,116 C240,102 234,86 220,96 C194,114 162,144 146,158 Z" fill="#ffffff" opacity=".26"/>
+            <path d="M210,88 C186,110 158,140 140,158" stroke="#ffffff" stroke-width="1.4" fill="none" opacity=".5"/>
+            <path d="M190,220 C170,210 152,196 142,184" stroke="#ffffff" stroke-width="1.2" fill="none" opacity=".45"/>
+            <circle cx="234" cy="86" r="3.2" fill="#fff" opacity=".85"/><circle cx="202" cy="248" r="2.8" fill="#fff" opacity=".75"/><circle cx="244" cy="112" r="2.4" fill="#ffd6ec" opacity=".8"/>
+          </g>
+
+          <!-- back hair (head scaled shorter) -->
+          <g transform="translate(26 42) scale(0.8)">
+          <path d="M130,66 C84,66 58,102 58,152 C58,198 72,232 92,250 L110,236 C98,216 96,188 102,168 L158,168 C164,188 162,216 150,236 L168,250 C188,232 202,198 202,152 C202,102 176,66 130,66 Z" fill="url(#hairGrad)"/>
+          </g>
+
+          <!-- ===== DESIGNER GOWN ===== -->
+          <!-- underskirt layer -->
+          <path d="M104,248 C96,268 86,290 82,302 Q130,314 178,302 C174,290 164,268 156,248 Z" fill="#e2caf5"/>
+          <!-- main skirt with ruffled petal hem -->
+          <path d="M108,246 C100,266 94,286 92,298 Q100,306 108,298 Q116,306 124,298 Q130,306 136,298 Q144,306 152,298 Q160,306 168,298 C166,286 160,266 152,246 Z" fill="url(#dressGrad)"/>
+          <path d="M92,298 Q100,306 108,298 Q116,306 124,298 Q130,306 136,298 Q144,306 152,298 Q160,306 168,298" stroke="url(#goldGrad)" stroke-width="2.5" fill="none"/>
+          <circle cx="110" cy="278" r="2.2" fill="#7fe0c0"/><circle cx="130" cy="286" r="2.4" fill="#ffcf5c"/><circle cx="150" cy="278" r="2.2" fill="#ff8fc0"/><circle cx="120" cy="266" r="1.8" fill="#fff"/><circle cx="142" cy="266" r="1.8" fill="#fff"/>
+          <!-- puff sleeves w/ gold trim -->
+          <ellipse cx="106" cy="212" rx="13" ry="10" fill="#ffb4d8"/>
+          <ellipse cx="154" cy="212" rx="13" ry="10" fill="#ffb4d8"/>
+          <path d="M95,214 Q106,205 117,214" stroke="url(#goldGrad)" stroke-width="2" fill="none"/>
+          <path d="M143,214 Q154,205 165,214" stroke="url(#goldGrad)" stroke-width="2" fill="none"/>
+          <!-- neck -->
+          <path d="M120,196 L120,208 Q130,214 140,208 L140,196 Z" fill="url(#skinGrad)"/>
+          <!-- bodice (sweetheart) w/ gold trim + gem buttons -->
+          <path d="M110,212 Q130,222 150,212 L152,248 Q130,256 108,248 Z" fill="url(#dressGrad)"/>
+          <path d="M110,213 Q130,223 150,213" stroke="url(#goldGrad)" stroke-width="2.5" fill="none"/>
+          <circle cx="130" cy="226" r="2.6" fill="#ff5fa8" stroke="#fff2c9" stroke-width=".7"/>
+          <circle cx="130" cy="235" r="2.6" fill="#5a8fe0" stroke="#fff2c9" stroke-width=".7"/>
+          <circle cx="130" cy="244" r="2.6" fill="#7fe0c0" stroke="#fff2c9" stroke-width=".7"/>
+          <!-- waist sash + bow -->
+          <path d="M108,246 Q130,254 152,246 L152,252 Q130,260 108,252 Z" fill="#7fe0c0"/>
+          <path d="M130,249 l-12,-6 l0,12 z" fill="#5fd0b0"/>
+          <path d="M130,249 l12,-6 l0,12 z" fill="#5fd0b0"/>
+          <circle cx="130" cy="249" r="3.4" fill="url(#goldGrad)"/>
+          <!-- NECKLACE (choker + pendant) -->
+          <path d="M121,203 Q130,208 139,203" stroke="url(#goldGrad)" stroke-width="2.2" fill="none"/>
+          <circle cx="130" cy="210" r="3.2" fill="#5a8fe0" stroke="url(#goldGrad)" stroke-width="1.3"/>
+          <!-- ARMS + HANDS (magic wand raised high in right hand) -->
+          <!-- left arm resting at side -->
+          <path d="M104,216 C96,226 89,238 89,248 C89,253 95,253 97,248 C99,238 106,227 114,220 Z" fill="url(#skinGrad)"/>
+          <ellipse cx="91" cy="251" rx="7" ry="8" fill="url(#skinGrad)"/>
+          <circle cx="87" cy="257" r="2.4" fill="url(#skinGrad)"/><circle cx="91" cy="258" r="2.5" fill="url(#skinGrad)"/><circle cx="95" cy="257" r="2.4" fill="url(#skinGrad)"/>
+          <circle cx="84" cy="251" r="2.6" fill="url(#skinGrad)"/>
+          <path d="M85,244 Q91,247 97,244" stroke="url(#goldGrad)" stroke-width="2" fill="none"/>
+          <!-- right arm raised, gripping the magic wand -->
+          <path d="M150,216 C160,210 172,200 182,188 C186,184 181,179 176,183 C167,192 158,201 148,210 Z" fill="url(#skinGrad)"/>
+          <line x1="187" y1="184" x2="211" y2="151" stroke="url(#goldGrad)" stroke-width="3.6" stroke-linecap="round"/>
+          <line x1="188" y1="183" x2="209" y2="153" stroke="#fff6d6" stroke-width="1.1" stroke-linecap="round" opacity=".7"/>
+          <path class="twinkle-s" style="transform-origin:214px 146px" d="M214,131 l3.8,9.6 l9.6,3.8 l-9.6,3.8 l-3.8,9.6 l-3.8,-9.6 l-9.6,-3.8 l9.6,-3.8 z" fill="url(#goldGrad)" stroke="#fff2c9" stroke-width="1.2"/>
+          <circle cx="214" cy="146" r="2.4" fill="#fff2c9"/>
+          <circle class="twinkle-s" style="transform-origin:200px 160px;animation-delay:-1s" cx="200" cy="160" r="1.8" fill="#fff2c9"/>
+          <circle class="twinkle-s" style="transform-origin:226px 138px;animation-delay:-1.6s" cx="226" cy="138" r="1.6" fill="#ffd6ec"/>
+          <ellipse cx="188" cy="184" rx="7" ry="7.5" fill="url(#skinGrad)"/>
+          <circle cx="184" cy="178" r="2.4" fill="url(#skinGrad)"/><circle cx="189" cy="177" r="2.5" fill="url(#skinGrad)"/><circle cx="193" cy="179" r="2.4" fill="url(#skinGrad)"/>
+          <circle cx="181" cy="188" r="2.6" fill="url(#skinGrad)"/>
+          <path d="M181,191 Q188,194 195,190" stroke="url(#goldGrad)" stroke-width="2" fill="none"/>
+
+          <!-- HEAD (scaled shorter) -->
+          <g transform="translate(26 42) scale(0.8)">
+          <!-- FACE -->
+          <path d="M80,150 C80,110 101,88 130,88 C159,88 180,110 180,150 C180,182 164,202 130,212 C96,202 80,182 80,150 Z" fill="url(#skinGrad)"/>
+          <circle cx="80" cy="160" r="6" fill="url(#skinGrad)"/><circle cx="180" cy="160" r="6" fill="url(#skinGrad)"/>
+          <path d="M84,132 Q130,146 176,132 Q130,140 84,132 Z" fill="#e7ab89" opacity=".28"/>
+
+          <path d="M83,128 Q99,120 115,127" stroke="#b06cc8" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M145,127 Q161,120 177,128" stroke="#b06cc8" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+          <!-- EYES -->
+          <g class="eyes">
+            <path d="M81,158 C82,145 91,138 100,138 C110,138 116,147 117,158 C117,172 109,180 98,180 C89,179 81,170 81,158 Z" fill="#fff"/>
+            <clipPath id="eL"><path d="M81,158 C82,145 91,138 100,138 C110,138 116,147 117,158 C117,172 109,180 98,180 C89,179 81,170 81,158 Z"/></clipPath>
+            <g clip-path="url(#eL)">
+              <ellipse cx="99" cy="161" rx="17" ry="21" fill="url(#irisGrad)"/>
+              <ellipse cx="99" cy="162" rx="7.5" ry="11" fill="#170f2c"/>
+              <ellipse cx="99" cy="176" rx="10" ry="5" fill="#bda4ff" opacity=".55"/>
+              <circle cx="92" cy="151" r="6" fill="#fff"/><circle cx="106" cy="170" r="3" fill="#fff"/><circle cx="96" cy="158" r="1.6" fill="#fff" opacity=".9"/>
+            </g>
+            <path d="M79,158 C80,143 90,135 100,135 C111,135 118,146 119,158" stroke="#221826" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M81,160 q-6,1 -9,5" stroke="#221826" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+            <path d="M83,165 q-6,2 -8,6" stroke="#221826" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <path d="M88,179 Q99,184 114,177" stroke="#d3a6c0" stroke-width="1.6" fill="none" opacity=".6"/>
+            <path d="M179,158 C178,145 169,138 160,138 C150,138 144,147 143,158 C143,172 151,180 162,180 C171,179 179,170 179,158 Z" fill="#fff"/>
+            <clipPath id="eR"><path d="M179,158 C178,145 169,138 160,138 C150,138 144,147 143,158 C143,172 151,180 162,180 C171,179 179,170 179,158 Z"/></clipPath>
+            <g clip-path="url(#eR)">
+              <ellipse cx="161" cy="161" rx="17" ry="21" fill="url(#irisGrad)"/>
+              <ellipse cx="161" cy="162" rx="7.5" ry="11" fill="#170f2c"/>
+              <ellipse cx="161" cy="176" rx="10" ry="5" fill="#bda4ff" opacity=".55"/>
+              <circle cx="168" cy="151" r="6" fill="#fff"/><circle cx="154" cy="170" r="3" fill="#fff"/><circle cx="164" cy="158" r="1.6" fill="#fff" opacity=".9"/>
+            </g>
+            <path d="M181,158 C180,143 170,135 160,135 C149,135 142,146 141,158" stroke="#221826" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M179,160 q6,1 9,5" stroke="#221826" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+            <path d="M177,165 q6,2 8,6" stroke="#221826" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <path d="M172,179 Q161,184 146,177" stroke="#d3a6c0" stroke-width="1.6" fill="none" opacity=".6"/>
+          </g>
+
+          <path d="M128,186 q2,3 4,0" stroke="#e6a488" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".65"/>
+          <path d="M122,197 Q130,207 138,197 Q130,202 122,197 Z" fill="#c65b74"/>
+          <path d="M126,199 q4,2.5 8,0" fill="#ff9bb0"/>
+          <ellipse cx="90" cy="182" rx="11" ry="6.5" fill="#ff9bb5" opacity=".4"/>
+          <ellipse cx="170" cy="182" rx="11" ry="6.5" fill="#ff9bb5" opacity=".4"/>
+          <path d="M85,180 l6,3 M92,179 l6,3" stroke="#fff" stroke-width="1.4" opacity=".5" stroke-linecap="round"/>
+          <path d="M165,180 l6,3 M172,179 l6,3" stroke="#fff" stroke-width="1.4" opacity=".5" stroke-linecap="round"/>
+
+          <!-- side locks -->
+          <path d="M80,116 C66,144 64,178 72,206 L84,198 C80,176 82,146 92,124 Z" fill="url(#hairGrad)"/>
+          <path d="M180,116 C194,144 196,178 188,206 L176,198 C180,176 178,146 168,124 Z" fill="url(#hairGrad)"/>
+
+          <!-- EARRINGS (drawn over hair) -->
+          <circle cx="80" cy="170" r="2.2" fill="url(#goldGrad)"/>
+          <path d="M80,172 l0,4" stroke="url(#goldGrad)" stroke-width="1.4"/>
+          <path d="M80,177 l3,4 l-3,4 l-3,-4 z" fill="#6fd0e0" stroke="#fff2c9" stroke-width=".6"/>
+          <circle cx="180" cy="170" r="2.2" fill="url(#goldGrad)"/>
+          <path d="M180,172 l0,4" stroke="url(#goldGrad)" stroke-width="1.4"/>
+          <path d="M180,177 l3,4 l-3,4 l-3,-4 z" fill="#6fd0e0" stroke="#fff2c9" stroke-width=".6"/>
+
+          <!-- front bangs -->
+          <path d="M76,116 C76,92 100,78 130,78 C160,78 184,92 184,116 L174,132 L166,114 L152,134 L140,114 L130,138 L120,114 L108,134 L94,114 L86,132 Z" fill="url(#hairGrad)"/>
+          <path d="M96,98 Q130,86 164,98 Q140,104 130,103 Q120,104 96,98 Z" fill="#ffe4f4" opacity=".55"/>
+
+          <!-- side flower -->
+          <g transform="translate(170,102)">
+            <circle cx="0" cy="-5" r="4" fill="#ff8fc0"/><circle cx="5" cy="-1" r="4" fill="#ff8fc0"/><circle cx="3" cy="5" r="4" fill="#ff8fc0"/><circle cx="-3" cy="5" r="4" fill="#ff8fc0"/><circle cx="-5" cy="-1" r="4" fill="#ff8fc0"/>
+            <circle cx="0" cy="0" r="3" fill="#ffd45c"/>
+          </g>
+          </g><!-- /HEAD scaled -->
+
+          <!-- BIG CROWN (unscaled, sits on shorter head) -->
+          <path d="M100,104 L108,78 L115,96 L123,72 L129,92 L130,66 L131,92 L137,72 L145,96 L152,78 L160,104 Q130,92 100,104 Z" fill="url(#goldGrad)" stroke="#e8a41f" stroke-width="1"/>
+          <circle cx="113" cy="98" r="1.8" fill="#5a8fe0"/><circle cx="123" cy="97" r="1.8" fill="#ff5fa8"/><circle cx="130" cy="97" r="2" fill="#7fe0c0"/><circle cx="137" cy="97" r="1.8" fill="#ff5fa8"/><circle cx="147" cy="98" r="1.8" fill="#5a8fe0"/>
+          <circle cx="108" cy="80" r="2.4" fill="#6fd0e0" stroke="#fff2c9" stroke-width=".6"/>
+          <circle cx="123" cy="74" r="2.6" fill="#ff8fc0" stroke="#fff2c9" stroke-width=".6"/>
+          <circle cx="138" cy="74" r="2.6" fill="#ff8fc0" stroke="#fff2c9" stroke-width=".6"/>
+          <circle cx="152" cy="80" r="2.4" fill="#6fd0e0" stroke="#fff2c9" stroke-width=".6"/>
+          <circle class="gemglow" cx="130" cy="68" r="4.8" fill="#ff5fa8" stroke="#fff2c9" stroke-width="1.2" style="transform-origin:130px 68px"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- CAMERA -->
+    <div class="cam-wrap">
+      <button class="cam" onclick="scanBook()" aria-label="Scan a book page">
+        <div class="cam-body">
+          <span class="grip"></span>
+          <span class="shutter"></span>
+          <span class="flash-bulb"></span>
+          <span class="cam-dot"></span>
+          <span class="cam-cheek l"></span><span class="cam-cheek r"></span>
+          <div class="cam-eyes">
+            <div class="cam-eye"><div class="cam-pupil"></div></div>
+            <div class="cam-eye" style="animation-delay:.15s"><div class="cam-pupil"></div></div>
+          </div>
+          <div class="lens"><div class="lens-inner"><div class="aperture"></div></div></div>
+          <svg class="cam-mouth" width="48" height="22" viewBox="0 0 48 22">
+            <path d="M7 5 Q24 24 41 5 C33 10 15 10 7 5 Z" fill="#17121f"/>
+            <path d="M9 6 Q24 12 39 6" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+            <path d="M18 13 Q24 20 30 13 Q24 16 18 13 Z" fill="#ff7a9c"/>
+          </svg>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <div class="flash" id="flash" aria-hidden="true"></div>
+
+  <div class="modal" id="modal">
+    <div class="card" id="card">
+      <h2>Grown-ups only 🔒</h2>
+      <p>Ask a grown-up to solve this.</p>
+      <div class="quiz" id="quiz">3 + 4 = ?</div>
+      <input id="answer" type="tel" inputmode="numeric" placeholder="?" autocomplete="off">
+      <div class="btn-row">
+        <button class="btn ghost" onclick="closeModal()">Back</button>
+        <button class="btn primary" onclick="checkGate()">Unlock</button>
+      </div>
+      <div class="settings-note" id="settingsNote">✓ Voice &amp; language settings — coming soon.</div>
+    </div>
+  </div>
+
+<script>
+  (function seedScene(){
+    const stars=document.getElementById('stars');
+    for(let i=0;i<34;i++){const s=document.createElement('div');s.className='star';const sz=1+Math.random()*2.4;
+      s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*55}%;width:${sz}px;height:${sz}px;animation-delay:${(Math.random()*5).toFixed(2)}s;animation-duration:${(4+Math.random()*3).toFixed(2)}s;`;stars.appendChild(s);}
+    const p=document.getElementById('petals');
+    for(let i=0;i<14;i++){const el=document.createElement('div');el.className='petal';
+      el.style.cssText=`left:${Math.random()*100}%;--drift:${(Math.random()*80-30).toFixed(0)}px;animation-duration:${(13+Math.random()*8).toFixed(1)}s;animation-delay:${(Math.random()*14).toFixed(1)}s;transform:scale(${(.7+Math.random()*.6).toFixed(2)});`;p.appendChild(el);}
+  })();
+
+  const EMOJI=['✨','⭐','💫','🌟','💛'];
+  function sparkleBurst(x,y,n=12){for(let i=0;i<n;i++){const s=document.createElement('div');s.className='sparkle';
+    s.textContent=EMOJI[Math.floor(Math.random()*EMOJI.length)];
+    const ang=Math.random()*Math.PI*2,dist=50+Math.random()*90;
+    s.style.left=x+'px';s.style.top=y+'px';
+    s.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(0)+'px');
+    s.style.setProperty('--dy',(Math.sin(ang)*dist).toFixed(0)+'px');
+    s.style.fontSize=(14+Math.random()*16)+'px';
+    document.body.appendChild(s);s.addEventListener('animationend',()=>s.remove());}}
+  function burstAt(el){const r=el.getBoundingClientRect();sparkleBurst(r.left+r.width/2,r.top+r.height/2);}
+
+  let bubbleTimer;
+  function say(text,ms=6000){const b=document.getElementById('bubble');b.textContent=text;
+    b.classList.remove('show');void b.offsetWidth;b.classList.add('show');
+    clearTimeout(bubbleTimer);bubbleTimer=setTimeout(()=>b.classList.remove('show'),ms);}
+
+  let hasSpoken=false;
+  function speak(text){if(!('speechSynthesis'in window))return;window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.pitch=1.4;u.rate=.95;u.onstart=()=>{hasSpoken=true;};window.speechSynthesis.speak(u);}
+
+  const WELCOME_VOICE="Hi Shubh! Welcome to your magic world! Tap the big camera button and take a photo of your textbook page, and let's play!";
+  const WELCOME_BUBBLE="Hi Shubh! 🌟 Tap the big camera and snap a photo of your textbook page — let's play!";
+  function greet(){say(WELCOME_BUBBLE,7000);speak(WELCOME_VOICE);}
+
+  function triggerPariSpeech(){greet();burstAt(document.querySelector('.pari-svg'));}
+  function scanBook(){const flash=document.getElementById('flash');flash.classList.remove('go');void flash.offsetWidth;flash.classList.add('go');
+    burstAt(document.querySelector('.cam-body'));
+    say("Click! Point me at your book page and I'll bring it to life! 📖");
+    speak("Click! Point me at your book page, and I will bring it to life!");}
+
+  let gateAnswer=7;
+  function openParentGate(){const a=2+Math.floor(Math.random()*6),b=2+Math.floor(Math.random()*6);gateAnswer=a+b;
+    document.getElementById('quiz').textContent=`${a} + ${b} = ?`;document.getElementById('answer').value='';
+    document.getElementById('settingsNote').style.display='none';document.getElementById('modal').classList.add('open');
+    setTimeout(()=>document.getElementById('answer').focus(),200);}
+  function closeModal(){document.getElementById('modal').classList.remove('open');}
+  function checkGate(){const val=parseInt(document.getElementById('answer').value,10);
+    if(val===gateAnswer){document.getElementById('settingsNote').style.display='block';burstAt(document.getElementById('card'));}
+    else{const card=document.getElementById('card');card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');document.getElementById('answer').value='';}}
+  document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+
+  window.addEventListener('load',()=>{setTimeout(greet,700);});
+  const kick=()=>{if(!hasSpoken)speak(WELCOME_VOICE);
+    window.removeEventListener('pointerdown',kick);window.removeEventListener('touchstart',kick);window.removeEventListener('keydown',kick);};
+  window.addEventListener('pointerdown',kick);window.addEventListener('touchstart',kick);window.addEventListener('keydown',kick);
+</script>
+</body>
+</html>
